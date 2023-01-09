@@ -3,6 +3,7 @@ package fdse.microservice.service;
 import edu.fudan.common.util.Response;
 import fdse.microservice.entity.Station;
 import fdse.microservice.repository.StationRepository;
+import org.checkerframework.checker.nullness.Opt;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RunWith(JUnit4.class)
 public class StationServiceImplTest {
@@ -36,7 +38,8 @@ public class StationServiceImplTest {
     @Test
     public void testCreate1() {
         Station station = new Station();
-        Mockito.when(repository.findById(Mockito.anyString()).get()).thenReturn(null);
+        station.setName("Station1");
+        Mockito.when(repository.findById(Mockito.anyString())).thenReturn(Optional.empty());
         Mockito.when(repository.save(Mockito.any(Station.class))).thenReturn(null);
         Response result = stationServiceImpl.create(station, headers);
         Assert.assertEquals(new Response<>(1, "Create success", station), result);
@@ -45,7 +48,8 @@ public class StationServiceImplTest {
     @Test
     public void testCreate2() {
         Station station = new Station();
-        Mockito.when(repository.findById(Mockito.anyString()).get()).thenReturn(station);
+        station.setName("Station1");
+        Mockito.when(repository.findByName(Mockito.any())).thenReturn(station);
         Response result = stationServiceImpl.create(station, headers);
         Assert.assertEquals(new Response<>(0, "Already exists", station), result);
     }
@@ -74,7 +78,7 @@ public class StationServiceImplTest {
     @Test
     public void testUpdate2() {
         Station info = new Station();
-        Mockito.when(repository.findById(Mockito.anyString()).get()).thenReturn(info);
+        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(info));
         Mockito.when(repository.save(Mockito.any(Station.class))).thenReturn(null);
         Response result = stationServiceImpl.update(info, headers);
         Assert.assertEquals("Update success", result.getMsg());
@@ -83,7 +87,7 @@ public class StationServiceImplTest {
     @Test
     public void testDelete1() {
         Station info = new Station();
-        Mockito.when(repository.findById(Mockito.anyString()).get()).thenReturn(info);
+        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(info));
         Mockito.doNothing().doThrow(new RuntimeException()).when(repository).delete(Mockito.any(Station.class));
         Response result = stationServiceImpl.delete(info.getId(), headers);
         Assert.assertEquals("Delete success", result.getMsg());
@@ -147,14 +151,14 @@ public class StationServiceImplTest {
     @Test
     public void testQueryById1() {
         Station station = new Station();
-        Mockito.when(repository.findById(Mockito.anyString()).get()).thenReturn(station);
+        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(station));
         Response result = stationServiceImpl.queryById("station_id", headers);
         Assert.assertEquals(new Response<>(1, "Success", ""), result);
     }
 
     @Test
     public void testQueryById2() {
-        Mockito.when(repository.findById(Mockito.anyString())).thenReturn(null);
+        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.empty());
         Response result = stationServiceImpl.queryById("station_id", headers);
         Assert.assertEquals(new Response<>(0, "No that stationId", "station_id"), result);
     }
@@ -171,7 +175,7 @@ public class StationServiceImplTest {
         Station station = new Station();
         List<String> idList = new ArrayList<>();
         idList.add("station_id");
-        Mockito.when(repository.findById(Mockito.anyString()).get()).thenReturn(station);
+        Mockito.when(repository.findById(Mockito.anyString())).thenReturn(Optional.of(station));
         Response result = stationServiceImpl.queryByIdBatch(idList, headers);
         Assert.assertEquals("Success", result.getMsg());
     }

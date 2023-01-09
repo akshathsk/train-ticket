@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import edu.fudan.common.entity.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @RunWith(JUnit4.class)
 public class SeatServiceImplTest {
@@ -59,6 +60,17 @@ public class SeatServiceImplTest {
                 Mockito.any(HttpEntity.class),
                 Mockito.any(ParameterizedTypeReference.class)))
                 .thenReturn(re1).thenReturn(re2).thenReturn(re3);
+
+        HttpEntity requestEntity = new HttpEntity(seat, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-order-service/api/v1/orderservice/order/tickets",
+                        HttpMethod.POST,
+                        requestEntity,
+                        new ParameterizedTypeReference<Response<LeftTicketInfo>>() {
+                        }))
+                .thenReturn(re2);
+
+        seat.setTotalNum(100);
         Response result = seatServiceImpl.distributeSeat(seat, headers);
         Assert.assertEquals("Use a new seat number!", result.getMsg());
     }
@@ -89,6 +101,17 @@ public class SeatServiceImplTest {
                 Mockito.any(HttpEntity.class),
                 Mockito.any(ParameterizedTypeReference.class)))
                 .thenReturn(re1).thenReturn(re2).thenReturn(re3);
+
+        HttpEntity requestEntity = new HttpEntity(seat, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-order-service/api/v1/orderOtherService/orderOther/tickets",
+                        HttpMethod.POST,
+                        requestEntity,
+                        new ParameterizedTypeReference<Response<LeftTicketInfo>>() {
+                        }))
+                .thenReturn(re2);
+
+        seat.setTotalNum(100);
         Response result = seatServiceImpl.distributeSeat(seat, headers);
         Assert.assertEquals("Use a new seat number!", result.getMsg());
     }
@@ -100,6 +123,7 @@ public class SeatServiceImplTest {
         seat.setSeatType(2);
         seat.setStartStation("start_station");
         seat.setDestStation("dest_station");
+        seat.setStations(Arrays.asList("start_station", "dest_station"));
 
         Route route = new Route();
         route.setStations( new ArrayList<String>(){{ add("start_place"); }} );
@@ -124,8 +148,27 @@ public class SeatServiceImplTest {
                 Mockito.any(HttpEntity.class),
                 Mockito.any(ParameterizedTypeReference.class)))
                 .thenReturn(re1).thenReturn(re2).thenReturn(re3).thenReturn(re4);
+
+        HttpEntity requestEntity = new HttpEntity(seat, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-order-service/api/v1/orderservice/order/tickets",
+                        HttpMethod.POST,
+                        requestEntity,
+                        new ParameterizedTypeReference<Response<LeftTicketInfo>>() {
+                        }))
+                .thenReturn(re2);
+
+        HttpEntity requestEntity2 = new HttpEntity(null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-config-service/api/v1/configservice/configs/DirectTicketAllocationProportion",
+                        HttpMethod.GET,
+                        requestEntity2,
+                        new ParameterizedTypeReference<Response<Config>>() {
+                        }))
+                .thenReturn(re4);
+
         Response result = seatServiceImpl.getLeftTicketOfInterval(seat, headers);
-        Assert.assertEquals(new Response<>(1, "Get Left Ticket of Internal Success", 1), result);
+        Assert.assertEquals(new Response<>(1, "Get Left Ticket of Internal Success", 0), result);
     }
 
     @Test
@@ -135,6 +178,7 @@ public class SeatServiceImplTest {
         seat.setSeatType(3);
         seat.setStartStation("start_station");
         seat.setDestStation("dest_station");
+        seat.setStations(Arrays.asList("start_station", "dest_station"));
 
         Route route = new Route();
         route.setStations( new ArrayList<String>(){{ add("start_place"); }} );
@@ -159,8 +203,27 @@ public class SeatServiceImplTest {
                 Mockito.any(HttpEntity.class),
                 Mockito.any(ParameterizedTypeReference.class)))
                 .thenReturn(re1).thenReturn(re2).thenReturn(re3).thenReturn(re4);
+
+        HttpEntity requestEntity = new HttpEntity(seat, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-order-other-service/api/v1/orderOtherService/orderOther/tickets",
+                        HttpMethod.POST,
+                        requestEntity,
+                        new ParameterizedTypeReference<Response<LeftTicketInfo>>() {
+                        }))
+                .thenReturn(re2);
+
+        HttpEntity requestEntity2 = new HttpEntity(null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-config-service/api/v1/configservice/configs/DirectTicketAllocationProportion",
+                        HttpMethod.GET,
+                        requestEntity2,
+                        new ParameterizedTypeReference<Response<Config>>() {
+                        }))
+                .thenReturn(re4);
+
         Response result = seatServiceImpl.getLeftTicketOfInterval(seat, headers);
-        Assert.assertEquals(new Response<>(1, "Get Left Ticket of Internal Success", 1), result);
+        Assert.assertEquals(new Response<>(1, "Get Left Ticket of Internal Success", 0), result);
     }
 
 }

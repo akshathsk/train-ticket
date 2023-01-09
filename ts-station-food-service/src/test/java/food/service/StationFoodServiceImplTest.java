@@ -39,7 +39,7 @@ public class StationFoodServiceImplTest {
     public void testCreateFoodStore1() {
         StationFoodStore fss=new StationFoodStore();
         Optional<StationFoodStore> fs = Optional.ofNullable(fss);
-        Mockito.when(stationFoodRepository.findById(Mockito.any(String.class))).thenReturn(fs);
+        Mockito.when(stationFoodRepository.findById(Mockito.any())).thenReturn(fs);
         Response result = foodMapServiceImpl.createFoodStore(fs.get(), headers);
         Assert.assertEquals(new Response<>(0, "Already Exists Id", null), result);
     }

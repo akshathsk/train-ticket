@@ -47,6 +47,7 @@ public class TravelPlanControllerTest {
     @Test
     public void testGetTransferResult() throws Exception {
         TransferTravelInfo info = new TransferTravelInfo();
+        info.setTravelDate("2022-02-24");
         Mockito.when(travelPlanService.getTransferSearch(Mockito.any(TransferTravelInfo.class), Mockito.any(HttpHeaders.class))).thenReturn(response);
         String requestJson = JSONObject.toJSONString(info);
         String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/travelplanservice/travelPlan/transferResult").contentType(MediaType.APPLICATION_JSON).content(requestJson))

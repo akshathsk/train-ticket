@@ -29,6 +29,9 @@ public class AdminBasicInfoServiceImplTest {
     private Response response = new Response();
     private ResponseEntity<Response> re = new ResponseEntity<>(response, HttpStatus.OK);
 
+    private static final String DEFAULT_PRICE_ID = String.valueOf(1);
+    private static final String DEFAULT_STATION_ID = String.valueOf(1);
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -37,7 +40,7 @@ public class AdminBasicInfoServiceImplTest {
     @Test
     public void testGetAllContacts() {
         Mockito.when(restTemplate.exchange(
-                "http://ts-contacts-service:12347/api/v1/contactservice/contacts",
+                "http://ts-contacts-service/api/v1/contactservice/contacts",
                 HttpMethod.GET,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -48,7 +51,7 @@ public class AdminBasicInfoServiceImplTest {
     @Test
     public void testDeleteContact() {
         Mockito.when(restTemplate.exchange(
-                "http://ts-contacts-service:12347/api/v1/contactservice/contacts/" + "contactsId",
+                "http://ts-contacts-service/api/v1/contactservice/contacts/" + "contactsId",
                 HttpMethod.DELETE,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -61,7 +64,7 @@ public class AdminBasicInfoServiceImplTest {
         Contacts mci = new Contacts();
         HttpEntity<Contacts> requestEntity = new HttpEntity<>(mci, headers);
         Mockito.when(restTemplate.exchange(
-                "http://ts-contacts-service:12347/api/v1/contactservice/contacts",
+                "http://ts-contacts-service/api/v1/contactservice/contacts",
                 HttpMethod.PUT,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -74,7 +77,7 @@ public class AdminBasicInfoServiceImplTest {
         Contacts c = new Contacts();
         HttpEntity<Contacts> requestEntity = new HttpEntity<>(c, headers);
         Mockito.when(restTemplate.exchange(
-                "http://ts-contacts-service:12347/api/v1/contactservice/contacts/admin",
+                "http://ts-contacts-service/api/v1/contactservice/contacts/admin",
                 HttpMethod.POST,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -85,7 +88,7 @@ public class AdminBasicInfoServiceImplTest {
     @Test
     public void testGetAllStations() {
         Mockito.when(restTemplate.exchange(
-                "http://ts-station-service:12345/api/v1/stationservice/stations",
+                "http://ts-station-service/api/v1/stationservice/stations",
                 HttpMethod.GET,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -98,7 +101,7 @@ public class AdminBasicInfoServiceImplTest {
         Station s = new Station();
         HttpEntity<Station> requestEntity = new HttpEntity<>(s, headers);
         Mockito.when(restTemplate.exchange(
-                "http://ts-station-service:12345/api/v1/stationservice/stations",
+                "http://ts-station-service/api/v1/stationservice/stations",
                 HttpMethod.POST,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -109,9 +112,10 @@ public class AdminBasicInfoServiceImplTest {
     @Test
     public void testDeleteStation() {
         Station s = new Station();
-        HttpEntity<Station> requestEntity = new HttpEntity<>(s, headers);
+        s.setId(DEFAULT_STATION_ID);
+        HttpEntity requestEntity = new HttpEntity(headers);
         Mockito.when(restTemplate.exchange(
-                "http://ts-station-service:12345/api/v1/stationservice/stations",
+                "http://ts-station-service/api/v1/stationservice/stations/" + DEFAULT_STATION_ID,
                 HttpMethod.DELETE,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -124,7 +128,7 @@ public class AdminBasicInfoServiceImplTest {
         Station s = new Station();
         HttpEntity<Station> requestEntity = new HttpEntity<>(s, headers);
         Mockito.when(restTemplate.exchange(
-                "http://ts-station-service:12345/api/v1/stationservice/stations",
+                "http://ts-station-service/api/v1/stationservice/stations",
                 HttpMethod.PUT,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -135,7 +139,7 @@ public class AdminBasicInfoServiceImplTest {
     @Test
     public void testGetAllTrains() {
         Mockito.when(restTemplate.exchange(
-                "http://ts-train-service:14567/api/v1/trainservice/trains",
+                "http://ts-train-service/api/v1/trainservice/trains",
                 HttpMethod.GET,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -148,7 +152,7 @@ public class AdminBasicInfoServiceImplTest {
         TrainType t = new TrainType();
         HttpEntity<TrainType> requestEntity = new HttpEntity<>(t, headers);
         Mockito.when(restTemplate.exchange(
-                "http://ts-train-service:14567/api/v1/trainservice/trains",
+                "http://ts-train-service/api/v1/trainservice/trains",
                 HttpMethod.POST,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -159,7 +163,7 @@ public class AdminBasicInfoServiceImplTest {
     @Test
     public void testDeleteTrain() {
         Mockito.when(restTemplate.exchange(
-                "http://ts-train-service:14567/api/v1/trainservice/trains/" + "id",
+                "http://ts-train-service/api/v1/trainservice/trains/" + "id",
                 HttpMethod.DELETE,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -172,7 +176,7 @@ public class AdminBasicInfoServiceImplTest {
         TrainType t = new TrainType();
         HttpEntity<TrainType> requestEntity = new HttpEntity<>(t, headers);
         Mockito.when(restTemplate.exchange(
-                "http://ts-train-service:14567/api/v1/trainservice/trains",
+                "http://ts-train-service/api/v1/trainservice/trains",
                 HttpMethod.PUT,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -183,7 +187,7 @@ public class AdminBasicInfoServiceImplTest {
     @Test
     public void testGetAllConfigs() {
         Mockito.when(restTemplate.exchange(
-                "http://ts-config-service:15679/api/v1/configservice/configs",
+                "http://ts-config-service/api/v1/configservice/configs",
                 HttpMethod.GET,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -196,7 +200,7 @@ public class AdminBasicInfoServiceImplTest {
         Config c = new Config();
         HttpEntity<Config> requestEntity = new HttpEntity<>(c, headers);
         Mockito.when(restTemplate.exchange(
-                "http://ts-config-service:15679/api/v1/configservice/configs",
+                "http://ts-config-service/api/v1/configservice/configs",
                 HttpMethod.POST,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -207,7 +211,7 @@ public class AdminBasicInfoServiceImplTest {
     @Test
     public void testDeleteConfig() {
         Mockito.when(restTemplate.exchange(
-                "http://ts-config-service:15679/api/v1/configservice/configs/" + "name",
+                "http://ts-config-service/api/v1/configservice/configs/" + "name",
                 HttpMethod.DELETE,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -220,7 +224,7 @@ public class AdminBasicInfoServiceImplTest {
         Config c = new Config();
         HttpEntity<Config> requestEntity = new HttpEntity<>(c, headers);
         Mockito.when(restTemplate.exchange(
-                "http://ts-config-service:15679/api/v1/configservice/configs",
+                "http://ts-config-service/api/v1/configservice/configs",
                 HttpMethod.PUT,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -231,7 +235,7 @@ public class AdminBasicInfoServiceImplTest {
     @Test
     public void testGetAllPrices() {
         Mockito.when(restTemplate.exchange(
-                "http://ts-price-service:16579/api/v1/priceservice/prices",
+                "http://ts-price-service/api/v1/priceservice/prices",
                 HttpMethod.GET,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -244,7 +248,7 @@ public class AdminBasicInfoServiceImplTest {
         PriceInfo pi = new PriceInfo();
         HttpEntity<PriceInfo> requestEntity = new HttpEntity<>(pi, headers);
         Mockito.when(restTemplate.exchange(
-                "http://ts-price-service:16579/api/v1/priceservice/prices",
+                "http://ts-price-service/api/v1/priceservice/prices",
                 HttpMethod.POST,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -255,9 +259,10 @@ public class AdminBasicInfoServiceImplTest {
     @Test
     public void testDeletePrice() {
         PriceInfo pi = new PriceInfo();
-        HttpEntity<PriceInfo> requestEntity = new HttpEntity<>(pi, headers);
+        pi.setId(DEFAULT_PRICE_ID);
+        HttpEntity requestEntity = new HttpEntity(headers);
         Mockito.when(restTemplate.exchange(
-                "http://ts-price-service:16579/api/v1/priceservice/prices",
+                "http://ts-price-service/api/v1/priceservice/prices/" + DEFAULT_PRICE_ID,
                 HttpMethod.DELETE,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -270,7 +275,7 @@ public class AdminBasicInfoServiceImplTest {
         PriceInfo pi = new PriceInfo();
         HttpEntity<PriceInfo> requestEntity = new HttpEntity<>(pi, headers);
         Mockito.when(restTemplate.exchange(
-                "http://ts-price-service:16579/api/v1/priceservice/prices",
+                "http://ts-price-service/api/v1/priceservice/prices",
                 HttpMethod.PUT,
                 requestEntity,
                 Response.class)).thenReturn(re);

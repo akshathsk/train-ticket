@@ -34,6 +34,9 @@ public class AdminBasicInfoControllerTest {
     private MockMvc mockMvc;
     private Response response = new Response();
 
+    private static final String DEFAULT_PRICE_ID = String.valueOf(1);
+    private static final String DEFAULT_STATION_ID = String.valueOf(1);
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -101,7 +104,7 @@ public class AdminBasicInfoControllerTest {
         Station s = new Station();
         Mockito.when(adminBasicInfoService.deleteStation(Mockito.anyString(), Mockito.any(HttpHeaders.class))).thenReturn(response);
         String requestJson = JSONObject.toJSONString(s);
-        String result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/adminbasicservice/adminbasic/stations").contentType(MediaType.APPLICATION_JSON).content(requestJson))
+        String result = mockMvc.perform(MockMvcRequestBuilders.delete(String.join("/", "/api/v1/adminbasicservice/adminbasic/stations", DEFAULT_STATION_ID)).contentType(MediaType.APPLICATION_JSON).content(requestJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn().getResponse().getContentAsString();
         Assert.assertEquals(response, JSONObject.parseObject(result, Response.class));
@@ -223,7 +226,7 @@ public class AdminBasicInfoControllerTest {
         PriceInfo pi = new PriceInfo();
         Mockito.when(adminBasicInfoService.deletePrice(Mockito.anyString(), Mockito.any(HttpHeaders.class))).thenReturn(response);
         String requestJson = JSONObject.toJSONString(pi);
-        String result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/adminbasicservice/adminbasic/prices").contentType(MediaType.APPLICATION_JSON).content(requestJson))
+        String result = mockMvc.perform(MockMvcRequestBuilders.delete(String.join("/", "/api/v1/adminbasicservice/adminbasic/prices", DEFAULT_PRICE_ID)).contentType(MediaType.APPLICATION_JSON).content(requestJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn().getResponse().getContentAsString();
         Assert.assertEquals(response, JSONObject.parseObject(result, Response.class));

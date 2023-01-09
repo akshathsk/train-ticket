@@ -19,7 +19,7 @@ import edu.fudan.common.entity.RoutePlanInfo;
 import edu.fudan.common.entity.Route;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 
 @RunWith(JUnit4.class)
 public class RoutePlanServiceImplTest {
@@ -78,7 +78,11 @@ public class RoutePlanServiceImplTest {
         Response<String> response = new Response(null, null, "");
         ResponseEntity<Response<String>> re = new ResponseEntity<>(response, HttpStatus.OK);
 
+        Route route = new Route();
+        route.setStations(Arrays.asList("form_station", "to_station"));
+
         ArrayList<Route> routeArrayList = new ArrayList<>();
+        routeArrayList.add(route);
         Response<ArrayList<Route>> response2 = new Response<>(null, null, routeArrayList);
         ResponseEntity<Response<ArrayList<Route>>> re2 = new ResponseEntity<>(response2, HttpStatus.OK);
 
@@ -91,6 +95,27 @@ public class RoutePlanServiceImplTest {
                 Mockito.any(HttpEntity.class),
                 Mockito.any(ParameterizedTypeReference.class)))
                 .thenReturn(re).thenReturn(re).thenReturn(re2).thenReturn(re3).thenReturn(re3);
+
+        HttpEntity requestEntity = new HttpEntity(null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-route-service/api/v1/routeservice/routes/form_station/to_station",
+                        HttpMethod.GET,
+                        requestEntity,
+                        new ParameterizedTypeReference<Response<ArrayList<Route>>>() {
+                        }))
+                .thenReturn(re2);
+
+        ArrayList<String> resultRoutes = new ArrayList<>();
+        resultRoutes.add(route.getId());
+        HttpEntity requestEntity2 = new HttpEntity(resultRoutes, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-travel-service/api/v1/travelservice/trips/routes",
+                        HttpMethod.POST,
+                        requestEntity2,
+                        new ParameterizedTypeReference<Response<ArrayList<ArrayList<Trip>>>>() {
+                        }))
+                .thenReturn(re3);
+
         Response result = routePlanServiceImpl.searchMinStopStations(info, headers);
         Assert.assertEquals("Success.", result.getMsg());
     }
