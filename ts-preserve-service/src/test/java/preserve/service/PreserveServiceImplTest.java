@@ -11,10 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import edu.fudan.common.entity.*;
+import preserve.mq.RabbitSend;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -28,6 +30,9 @@ public class PreserveServiceImplTest {
 
     @Mock
     private RestTemplate restTemplate;
+
+    @Mock
+    private RabbitSend sendService;
 
     private HttpHeaders headers = new HttpHeaders();
     private HttpEntity requestEntity = new HttpEntity(headers);
@@ -48,19 +53,18 @@ public class PreserveServiceImplTest {
                 .handleDate("handle_date")
                 .tripId("G1255")
                 .seatType(2)
-                .assurance(1)
-                .foodType(1)
+                .assurance(0)
+                .foodType(0)
                 .foodName("food_name")
                 .foodPrice(1.0)
                 .stationName("station_name")
                 .storeName("store_name")
-                .consigneeName("consignee_name")
                 .consigneePhone("123456789")
                 .consigneeWeight(1.0)
                 .isWithin(true)
                 .build();
 
-        //response for checkSecurity()、addAssuranceForOrder()、createFoodOrder()、createConsign()
+        //response for checkSecurity()、createFoodOrder()、createConsign()
         Response response1 = new Response<>(1, null, null);
         ResponseEntity<Response> re1 = new ResponseEntity<>(response1, HttpStatus.OK);
 
@@ -68,12 +72,11 @@ public class PreserveServiceImplTest {
         ResponseEntity<Boolean> re10 = new ResponseEntity<>(true, HttpStatus.OK);
 
         Mockito.when(restTemplate.exchange(
-                Mockito.anyString(),
-                Mockito.any(HttpMethod.class),
-                Mockito.any(HttpEntity.class),
-                Mockito.any(Class.class)))
-                .thenReturn(re1).thenReturn(re1).thenReturn(re1).thenReturn(re1).thenReturn(re10);
-
+                        Mockito.anyString(),
+                        Mockito.any(HttpMethod.class),
+                        Mockito.any(HttpEntity.class),
+                        Mockito.any(Class.class)))
+                .thenReturn(re1).thenReturn(re1).thenReturn(re1).thenReturn(re10);
 
         //response for getContactsById()
         Contacts contacts = new Contacts();
@@ -92,19 +95,23 @@ public class PreserveServiceImplTest {
         ResponseEntity<Response<TripAllDetail>> re3 = new ResponseEntity<>(response3, HttpStatus.OK);
 
         //response for queryForStationId()
-        Response<String> response4 = new Response<>(null, null, "");
+        Response<String> response4 = new Response<>(1, null, "");
         ResponseEntity<Response<String>> re4 = new ResponseEntity<>(response4, HttpStatus.OK);
 
         //response for travel result
         TravelResult travelResult = new TravelResult();
         travelResult.setPrices( new HashMap<String, String>(){{ put("confortClass", "1.0"); }} );
-        Response<TravelResult> response5 = new Response<>(null, null, travelResult);
+        Route route = new Route();
+        travelResult.setRoute(route);
+        TrainType trainType = new TrainType();
+        travelResult.setTrainType(trainType);
+        Response<TravelResult> response5 = new Response<>(1, null, travelResult);
         ResponseEntity<Response<TravelResult>> re5 = new ResponseEntity<>(response5, HttpStatus.OK);
 
         //response for dipatchSeat()
         Ticket ticket = new Ticket();
         ticket.setSeatNo(1);
-        Response<Ticket> response6 = new Response<>(null, null, ticket);
+        Response<Ticket> response6 = new Response<>(1, null, ticket);
         ResponseEntity<Response<Ticket>> re6 = new ResponseEntity<>(response6, HttpStatus.OK);
 
         //response for createOrder()
@@ -114,8 +121,13 @@ public class PreserveServiceImplTest {
         order.setTravelDate(StringUtils.Date2String(new Date()));
         order.setFrom("from_station");
         order.setTo("to_station");
+        order.setTravelTime("13:00");
         Response<Order> response7 = new Response<>(1, null, order);
         ResponseEntity<Response<Order>> re7 = new ResponseEntity<>(response7, HttpStatus.OK);
+
+        //response for addAssuranceForOrder()
+        Response<Assurance> response8 = new Response<>(1, null, null);
+        ResponseEntity<Response<Assurance>> re8 = new ResponseEntity<>(response8, HttpStatus.OK);
 
         //response for getAccount()
         User user = new User();
@@ -125,11 +137,60 @@ public class PreserveServiceImplTest {
         ResponseEntity<Response<User>> re9 = new ResponseEntity<>(response9, HttpStatus.OK);
 
         Mockito.when(restTemplate.exchange(
-                Mockito.anyString(),
-                Mockito.any(HttpMethod.class),
-                Mockito.any(HttpEntity.class),
-                Mockito.any(ParameterizedTypeReference.class)))
-                .thenReturn(re2).thenReturn(re3).thenReturn(re4).thenReturn(re4).thenReturn(re5).thenReturn(re6).thenReturn(re7).thenReturn(re9);
+                        Mockito.anyString(),
+                        Mockito.any(HttpMethod.class),
+                        Mockito.any(HttpEntity.class),
+                        Mockito.any(ParameterizedTypeReference.class)))
+                .thenReturn(re5);
+
+        TripAllDetailInfo gtdi = new TripAllDetailInfo();
+        gtdi.setFrom(oti.getFrom());
+        gtdi.setTo(oti.getTo());
+        gtdi.setTravelDate(oti.getDate());
+        gtdi.setTripId(oti.getTripId());
+        HttpEntity requestGetTripAllDetailResult = new HttpEntity(gtdi, headers);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-travel-service/api/v1/travelservice/trip_detail",
+                        HttpMethod.POST,
+                        requestGetTripAllDetailResult,
+                        new ParameterizedTypeReference<Response<TripAllDetail>>() {
+                        }))
+                .thenReturn(re3);
+
+        HttpEntity requestGetContactsResult = new HttpEntity(headers);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-contacts-service/api/v1/contactservice/contacts/" + oti.getContactsId(),
+                        HttpMethod.GET,
+                        requestGetContactsResult,
+                        new ParameterizedTypeReference<Response<Contacts>>() {
+                        }))
+                .thenReturn(re2);
+
+        Seat seatRequest = new Seat();
+        seatRequest.setTravelDate(oti.getDate());
+        seatRequest.setTrainNumber("G1255");
+        seatRequest.setStartStation("from_station");
+        seatRequest.setSeatType(2);
+        seatRequest.setDestStation("to_station");
+        seatRequest.setTotalNum(0);
+        seatRequest.setStations(null);
+        HttpEntity requestEntityTicket = new HttpEntity(seatRequest, headers);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-seat-service/api/v1/seatservice/seats",
+                        HttpMethod.POST,
+                        requestEntityTicket,
+                        new ParameterizedTypeReference<Response<Ticket>>() {
+                        }))
+                .thenReturn(re6);
+
+        HttpEntity requestEntitySendEmail = new HttpEntity(headers);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-user-service/api/v1/userservice/users/id/" + oti.getAccountId(),
+                        HttpMethod.GET,
+                        requestEntitySendEmail,
+                        new ParameterizedTypeReference<Response<User>>() {
+                        }))
+                .thenReturn(re9);
 
         Response result = preserveServiceImpl.preserve(oti, headers);
         Assert.assertEquals(new Response<>(1, "Success.", null), result);
@@ -143,7 +204,7 @@ public class PreserveServiceImplTest {
         Response<Ticket> response = new Response<>();
         ResponseEntity<Response<Ticket>> reTicket = new ResponseEntity<>(response, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-seat-service:18898/api/v1/seatservice/seats",
+                "http://ts-seat-service/api/v1/seatservice/seats",
                 HttpMethod.POST,
                 requestEntityTicket,
                 new ParameterizedTypeReference<Response<Ticket>>() {
@@ -155,10 +216,10 @@ public class PreserveServiceImplTest {
     @Test
     public void testSendEmail() {
         NotifyInfo notifyInfo = new NotifyInfo();
-        HttpEntity requestEntitySendEmail = new HttpEntity(notifyInfo, headers);
+        HttpEntity requestEntitySendEmail = new HttpEntity<>(notifyInfo, headers);
         ResponseEntity<Boolean> reSendEmail = new ResponseEntity<>(true, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-notification-service:17853/api/v1/notifyservice/notification/preserve_success",
+                "http://ts-notification-service/api/v1/notifyservice/notification/preserve_success",
                 HttpMethod.POST,
                 requestEntitySendEmail,
                 Boolean.class)).thenReturn(reSendEmail);
@@ -171,7 +232,7 @@ public class PreserveServiceImplTest {
         Response<User> response = new Response<>();
         ResponseEntity<Response<User>> re = new ResponseEntity<>(response, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-user-service:12342/api/v1/userservice/users/id/1",
+                "http://ts-user-service/api/v1/userservice/users/id/1",
                 HttpMethod.GET,
                 requestEntity,
                 new ParameterizedTypeReference<Response<User>>() {

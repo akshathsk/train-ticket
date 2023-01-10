@@ -82,7 +82,7 @@ public class StationControllerTest {
         Station station = new Station();
         Mockito.when(stationService.delete(Mockito.anyString(), Mockito.any(HttpHeaders.class))).thenReturn(response);
         String requestJson = JSONObject.toJSONString(station);
-        String result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/stationservice/stations").contentType(MediaType.APPLICATION_JSON).content(requestJson))
+        String result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/stationservice/stations/1").contentType(MediaType.APPLICATION_JSON).content(requestJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn().getResponse().getContentAsString();
         Assert.assertEquals(response, JSONObject.parseObject(result, Response.class));

@@ -22,7 +22,7 @@ public class TrainServiceImpl implements TrainService {
     @Override
     public boolean create(TrainType trainType, HttpHeaders headers) {
         boolean result = false;
-        if(trainType.getName().isEmpty()){
+        if(trainType.getName() == null || trainType.getName().isEmpty()){
             TrainServiceImpl.LOGGER.error("[create][Create train error][Train Type name not specified]");
             return result;
         }

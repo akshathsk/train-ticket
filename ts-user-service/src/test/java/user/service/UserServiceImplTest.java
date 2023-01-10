@@ -10,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -19,8 +21,10 @@ import user.entity.User;
 import user.repository.UserRepository;
 import user.service.impl.UserServiceImpl;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RunWith(JUnit4.class)
@@ -35,6 +39,9 @@ public class UserServiceImplTest {
     @Mock
     private RestTemplate restTemplate;
 
+    @Mock
+    private DiscoveryClient discoveryClient;
+
     private HttpHeaders headers = new HttpHeaders();
 
     @Before
@@ -46,6 +53,42 @@ public class UserServiceImplTest {
     public void testSaveUser() {
         UserDto userDto = new UserDto(UUID.randomUUID().toString(), "user_name", "xxx", 0, 1, "", "");
         Mockito.when(userRepository.findByUserName(Mockito.anyString())).thenReturn(null);
+
+        ServiceInstance serviceInstance = new ServiceInstance() {
+            @Override
+            public String getServiceId() {
+                return null;
+            }
+
+            @Override
+            public String getHost() {
+                return "localhost";
+            }
+
+            @Override
+            public int getPort() {
+                return 8080;
+            }
+
+            @Override
+            public boolean isSecure() {
+                return false;
+            }
+
+            @Override
+            public URI getUri() {
+                return null;
+            }
+
+            @Override
+            public Map<String, String> getMetadata() {
+                return null;
+            }
+        };
+
+        List<ServiceInstance> auth_svcs = new ArrayList<>();
+        auth_svcs.add(serviceInstance);
+        Mockito.when(discoveryClient.getInstances(Mockito.anyString())).thenReturn(auth_svcs);
 
         //mock createDefaultAuthUser()
         Response<ArrayList<AuthDto>> response1 = new Response<>();
@@ -98,7 +141,7 @@ public class UserServiceImplTest {
     public void testFindByUserId1() {
         UUID userId = UUID.randomUUID();
         User user = new User();
-        Mockito.when(userRepository.findByUserId(Mockito.any(UUID.class).toString())).thenReturn(user);
+        Mockito.when(userRepository.findByUserId(Mockito.anyString())).thenReturn(user);
         Response result = userServiceImpl.findByUserId(userId.toString(), headers);
         Assert.assertEquals(new Response<>(1, "Find User Success", user), result);
     }
@@ -106,7 +149,7 @@ public class UserServiceImplTest {
     @Test
     public void testFindByUserId2() {
         UUID userId = UUID.randomUUID();
-        Mockito.when(userRepository.findByUserId(Mockito.any(UUID.class).toString())).thenReturn(null);
+        Mockito.when(userRepository.findByUserId(Mockito.anyString())).thenReturn(null);
         Response result = userServiceImpl.findByUserId(userId.toString(), headers);
         Assert.assertEquals(new Response<>(0, "No User", null), result);
     }
@@ -115,13 +158,8 @@ public class UserServiceImplTest {
     public void testDeleteUser1() {
         String userId = UUID.randomUUID().toString();
         User user = new User();
-        Mockito.when(userRepository.findByUserId(Mockito.any(UUID.class).toString())).thenReturn(user);
-        HttpEntity<Response> httpEntity = new HttpEntity<>(headers);
-        Mockito.when(restTemplate.exchange("http://ts-auth-service:12340/api/v1" + "/users/" + userId,
-                HttpMethod.DELETE,
-                httpEntity,
-                Response.class)).thenReturn(null);
-        Mockito.doNothing().doThrow(new RuntimeException()).when(userRepository).deleteByUserId(Mockito.any(UUID.class).toString());
+        Mockito.when(userRepository.findByUserId(Mockito.anyString())).thenReturn(user);
+        Mockito.doNothing().doThrow(new RuntimeException()).when(userRepository).deleteByUserId(Mockito.anyString());
         Response result = userServiceImpl.deleteUser(userId, headers);
         Assert.assertEquals(new Response<>(1, "DELETE SUCCESS", null), result);
     }
@@ -129,7 +167,7 @@ public class UserServiceImplTest {
     @Test
     public void testDeleteUser2() {
         UUID userId = UUID.randomUUID();
-        Mockito.when(userRepository.findByUserId(Mockito.any(UUID.class).toString())).thenReturn(null);
+        Mockito.when(userRepository.findByUserId(Mockito.anyString())).thenReturn(null);
         Response result = userServiceImpl.deleteUser(userId.toString(), headers);
         Assert.assertEquals(new Response<>(0, "USER NOT EXISTS", null), result);
     }
@@ -138,8 +176,8 @@ public class UserServiceImplTest {
     public void testUpdateUser1() {
         UserDto userDto = new UserDto();
         User oldUser = new User();
-        Mockito.when(userRepository.findByUserName(Mockito.anyString())).thenReturn(oldUser);
-        Mockito.doNothing().doThrow(new RuntimeException()).when(userRepository).deleteByUserId(Mockito.any(UUID.class).toString());
+        Mockito.when(userRepository.findByUserId((String) Mockito.any())).thenReturn(oldUser);
+        Mockito.doNothing().doThrow(new RuntimeException()).when(userRepository).deleteByUserId(Mockito.anyString());
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(null);
         Response result = userServiceImpl.updateUser(userDto, headers);
         Assert.assertEquals("SAVE USER SUCCESS", result.getMsg());

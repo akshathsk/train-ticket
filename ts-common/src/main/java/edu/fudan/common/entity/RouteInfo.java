@@ -27,11 +27,17 @@ public class RouteInfo {
     private String id;
 
     public List<String> getStations(){
+        if (stationList == null || stationList.isEmpty()) {
+            return new ArrayList<>();
+        }
         String[] stations = stationList.split(",");
         return Arrays.asList(stations);
     }
 
     public List<String> getDistances(){
+        if (distanceList == null || distanceList.isEmpty()) {
+            return new ArrayList<>();
+        }
         String[] distances = distanceList.split(",");
         return Arrays.asList(distances);
     }

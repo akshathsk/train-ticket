@@ -83,7 +83,7 @@ public class OrderControllerTest {
     @Test
     public void testQueryOrders() throws Exception {
         OrderInfo qi = new OrderInfo();
-        Mockito.when(orderService.queryOrders(Mockito.any(OrderInfo.class), Mockito.anyString(), Mockito.any(HttpHeaders.class))).thenReturn(response);
+        Mockito.when(orderService.queryOrders(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(response);
         String requestJson = JSONObject.toJSONString(qi);
         String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orderservice/order/query").contentType(MediaType.APPLICATION_JSON).content(requestJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -94,7 +94,7 @@ public class OrderControllerTest {
     @Test
     public void testQueryOrdersForRefresh() throws Exception {
         OrderInfo qi = new OrderInfo();
-        Mockito.when(orderService.queryOrdersForRefresh(Mockito.any(OrderInfo.class), Mockito.anyString(), Mockito.any(HttpHeaders.class))).thenReturn(response);
+        Mockito.when(orderService.queryOrdersForRefresh(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(response);
         String requestJson = JSONObject.toJSONString(qi);
         String result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orderservice/order/refresh").contentType(MediaType.APPLICATION_JSON).content(requestJson))
                 .andExpect(MockMvcResultMatchers.status().isOk())

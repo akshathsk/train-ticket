@@ -86,6 +86,74 @@ public class TravelPlanServiceImplTest {
                 .thenReturn(re3).thenReturn(re3).thenReturn(re4)
                 .thenReturn(re3).thenReturn(re3).thenReturn(re4);
 
+        TrainType trainType = new TrainType();
+        Response response = new Response<>(1, "", trainType);
+        ResponseEntity<Response> res = new ResponseEntity<>(response, HttpStatus.OK);
+        HttpEntity requestEntity = new HttpEntity(null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-train-service/api/v1/trainservice/trains/byName/type_id",
+                        HttpMethod.GET,
+                        requestEntity,
+                        Response.class))
+                .thenReturn(res);
+
+        Seat seatRequest = new Seat();
+        seatRequest.setDestStation("from_station");
+        seatRequest.setStartStation("to_station");
+        seatRequest.setTrainNumber("trip_id");
+        seatRequest.setTravelDate("");
+        seatRequest.setSeatType(2);
+        seatRequest.setStations(new ArrayList<>());
+        seatRequest.setTotalNum(0);
+        HttpEntity requestEntity2 = new HttpEntity(seatRequest, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-seat-service/api/v1/seatservice/seats/left_tickets",
+                        HttpMethod.POST,
+                        requestEntity2,
+                        new ParameterizedTypeReference<Response<Integer>>() {
+                        }))
+                .thenReturn(re4);
+
+        RoutePlanInfo routePlanInfo = new RoutePlanInfo();
+        routePlanInfo.setNum(5);
+        routePlanInfo.setStartStation("start_station");
+        routePlanInfo.setEndStation("end_station");
+        routePlanInfo.setTravelDate("");
+        HttpEntity requestEntity3 = new HttpEntity(routePlanInfo, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-route-plan-service/api/v1/routeplanservice/routePlan/cheapestRoute",
+                        HttpMethod.POST,
+                        requestEntity3,
+                        new ParameterizedTypeReference<Response<ArrayList<RoutePlanResultUnit>>>() {
+                        }))
+                .thenReturn(re1);
+
+        HttpEntity requestEntity4 = new HttpEntity(seatRequest, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-seat-service/api/v1/seatservice/seats/left_tickets",
+                        HttpMethod.POST,
+                        requestEntity4,
+                        new ParameterizedTypeReference<Response<Integer>>() {
+                        }))
+                .thenReturn(re4);
+
+        Seat seatRequest2 = new Seat();
+        seatRequest2.setDestStation("from_station");
+        seatRequest2.setStartStation("to_station");
+        seatRequest2.setTrainNumber("trip_id");
+        seatRequest2.setTravelDate("");
+        seatRequest2.setSeatType(3);
+        seatRequest2.setStations(new ArrayList<>());
+        seatRequest2.setTotalNum(0);
+        HttpEntity requestEntity5 = new HttpEntity(seatRequest2, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-seat-service/api/v1/seatservice/seats/left_tickets",
+                        HttpMethod.POST,
+                        requestEntity5,
+                        new ParameterizedTypeReference<Response<Integer>>() {
+                        }))
+                .thenReturn(re4);
+
         Response result = travelPlanServiceImpl.getCheapest(info, headers);
         Assert.assertEquals("Success", result.getMsg());
     }
@@ -122,6 +190,74 @@ public class TravelPlanServiceImplTest {
                 .thenReturn(re3).thenReturn(re3).thenReturn(re4)
                 .thenReturn(re3).thenReturn(re3).thenReturn(re4);
 
+        TrainType trainType = new TrainType();
+        Response response = new Response<>(1, "", trainType);
+        ResponseEntity<Response> res = new ResponseEntity<>(response, HttpStatus.OK);
+        HttpEntity requestEntity = new HttpEntity(null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-train-service/api/v1/trainservice/trains/byName/type_id",
+                        HttpMethod.GET,
+                        requestEntity,
+                        Response.class))
+                .thenReturn(res);
+
+        Seat seatRequest = new Seat();
+        seatRequest.setDestStation("from_station");
+        seatRequest.setStartStation("to_station");
+        seatRequest.setTrainNumber("trip_id");
+        seatRequest.setTravelDate("");
+        seatRequest.setSeatType(2);
+        seatRequest.setStations(new ArrayList<>());
+        seatRequest.setTotalNum(0);
+        HttpEntity requestEntity2 = new HttpEntity(seatRequest, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-seat-service/api/v1/seatservice/seats/left_tickets",
+                        HttpMethod.POST,
+                        requestEntity2,
+                        new ParameterizedTypeReference<Response<Integer>>() {
+                        }))
+                .thenReturn(re4);
+
+        RoutePlanInfo routePlanInfo = new RoutePlanInfo();
+        routePlanInfo.setNum(5);
+        routePlanInfo.setStartStation("start_station");
+        routePlanInfo.setEndStation("end_station");
+        routePlanInfo.setTravelDate("");
+        HttpEntity requestEntity3 = new HttpEntity(routePlanInfo, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-route-plan-service/api/v1/routeplanservice/routePlan/quickestRoute",
+                        HttpMethod.POST,
+                        requestEntity3,
+                        new ParameterizedTypeReference<Response<ArrayList<RoutePlanResultUnit>>>() {
+                        }))
+                .thenReturn(re1);
+
+        HttpEntity requestEntity4 = new HttpEntity(seatRequest, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-seat-service/api/v1/seatservice/seats/left_tickets",
+                        HttpMethod.POST,
+                        requestEntity4,
+                        new ParameterizedTypeReference<Response<Integer>>() {
+                        }))
+                .thenReturn(re4);
+
+        Seat seatRequest2 = new Seat();
+        seatRequest2.setDestStation("from_station");
+        seatRequest2.setStartStation("to_station");
+        seatRequest2.setTrainNumber("trip_id");
+        seatRequest2.setTravelDate("");
+        seatRequest2.setSeatType(3);
+        seatRequest2.setStations(new ArrayList<>());
+        seatRequest2.setTotalNum(0);
+        HttpEntity requestEntity5 = new HttpEntity(seatRequest2, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-seat-service/api/v1/seatservice/seats/left_tickets",
+                        HttpMethod.POST,
+                        requestEntity5,
+                        new ParameterizedTypeReference<Response<Integer>>() {
+                        }))
+                .thenReturn(re4);
+
         Response result = travelPlanServiceImpl.getQuickest(info, headers);
         Assert.assertEquals("Success", result.getMsg());
     }
@@ -157,6 +293,74 @@ public class TravelPlanServiceImplTest {
                 .thenReturn(re2)
                 .thenReturn(re3).thenReturn(re3).thenReturn(re4)
                 .thenReturn(re3).thenReturn(re3).thenReturn(re4);
+
+        TrainType trainType = new TrainType();
+        Response response = new Response<>(1, "", trainType);
+        ResponseEntity<Response> res = new ResponseEntity<>(response, HttpStatus.OK);
+        HttpEntity requestEntity = new HttpEntity(null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-train-service/api/v1/trainservice/trains/byName/type_id",
+                        HttpMethod.GET,
+                        requestEntity,
+                        Response.class))
+                .thenReturn(res);
+
+        Seat seatRequest = new Seat();
+        seatRequest.setDestStation("from_station");
+        seatRequest.setStartStation("to_station");
+        seatRequest.setTrainNumber("trip_id");
+        seatRequest.setTravelDate("");
+        seatRequest.setSeatType(2);
+        seatRequest.setStations(new ArrayList<>());
+        seatRequest.setTotalNum(0);
+        HttpEntity requestEntity2 = new HttpEntity(seatRequest, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-seat-service/api/v1/seatservice/seats/left_tickets",
+                        HttpMethod.POST,
+                        requestEntity2,
+                        new ParameterizedTypeReference<Response<Integer>>() {
+                        }))
+                .thenReturn(re4);
+
+        RoutePlanInfo routePlanInfo = new RoutePlanInfo();
+        routePlanInfo.setNum(5);
+        routePlanInfo.setStartStation("start_station");
+        routePlanInfo.setEndStation("end_station");
+        routePlanInfo.setTravelDate("");
+        HttpEntity requestEntity3 = new HttpEntity(routePlanInfo, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-route-plan-service/api/v1/routeplanservice/routePlan/minStopStations",
+                        HttpMethod.POST,
+                        requestEntity3,
+                        new ParameterizedTypeReference<Response<ArrayList<RoutePlanResultUnit>>>() {
+                        }))
+                .thenReturn(re1);
+
+        HttpEntity requestEntity4 = new HttpEntity(seatRequest, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-seat-service/api/v1/seatservice/seats/left_tickets",
+                        HttpMethod.POST,
+                        requestEntity4,
+                        new ParameterizedTypeReference<Response<Integer>>() {
+                        }))
+                .thenReturn(re4);
+
+        Seat seatRequest2 = new Seat();
+        seatRequest2.setDestStation("from_station");
+        seatRequest2.setStartStation("to_station");
+        seatRequest2.setTrainNumber("trip_id");
+        seatRequest2.setTravelDate("");
+        seatRequest2.setSeatType(3);
+        seatRequest2.setStations(new ArrayList<>());
+        seatRequest2.setTotalNum(0);
+        HttpEntity requestEntity5 = new HttpEntity(seatRequest2, null);
+        Mockito.when(restTemplate.exchange(
+                        "http://ts-seat-service/api/v1/seatservice/seats/left_tickets",
+                        HttpMethod.POST,
+                        requestEntity5,
+                        new ParameterizedTypeReference<Response<Integer>>() {
+                        }))
+                .thenReturn(re4);
 
         Response result = travelPlanServiceImpl.getMinStation(info, headers);
         Assert.assertEquals("Success", result.getMsg());

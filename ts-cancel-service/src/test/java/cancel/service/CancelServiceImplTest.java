@@ -42,7 +42,7 @@ public class CancelServiceImplTest {
         Response<Order> response = new Response<>(1, null, order);
         ResponseEntity<Response<Order>> re = new ResponseEntity<>(response, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-order-service:12031/api/v1/orderservice/order/" + "order_id",
+                "http://ts-order-service/api/v1/orderservice/order/" + "order_id",
                 HttpMethod.GET,
                 requestEntity,
                 new ParameterizedTypeReference<Response<Order>>() {
@@ -57,7 +57,7 @@ public class CancelServiceImplTest {
         Response<Order> response = new Response<>(0, null, null);
         ResponseEntity<Response<Order>> re = new ResponseEntity<>(response, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-order-service:12031/api/v1/orderservice/order/" + "order_id",
+                "http://ts-order-service/api/v1/orderservice/order/" + "order_id",
                 HttpMethod.GET,
                 requestEntity,
                 new ParameterizedTypeReference<Response<Order>>() {
@@ -68,7 +68,7 @@ public class CancelServiceImplTest {
         Response<Order> response2 = new Response<>(1, null, order);
         ResponseEntity<Response<Order>> re2 = new ResponseEntity<>(response2, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-order-other-service:12032/api/v1/orderOtherService/orderOther/" + "order_id",
+                "http://ts-order-other-service/api/v1/orderOtherService/orderOther/" + "order_id",
                 HttpMethod.GET,
                 requestEntity,
                 new ParameterizedTypeReference<Response<Order>>() {
@@ -83,7 +83,7 @@ public class CancelServiceImplTest {
         HttpEntity requestEntity2 = new HttpEntity(notifyInfo, headers);
         ResponseEntity<Boolean> re = new ResponseEntity<>(true, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-notification-service:17853/api/v1/notifyservice/notification/order_cancel_success",
+                "http://ts-notification-service/api/v1/notifyservice/notification/order_cancel_success",
                 HttpMethod.POST,
                 requestEntity2,
                 Boolean.class)).thenReturn(re);
@@ -99,7 +99,7 @@ public class CancelServiceImplTest {
         Response<Order> response = new Response<>(1, null, order);
         ResponseEntity<Response<Order>> re = new ResponseEntity<>(response, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-order-service:12031/api/v1/orderservice/order/" + "order_id",
+                "http://ts-order-service/api/v1/orderservice/order/" + "order_id",
                 HttpMethod.GET,
                 requestEntity,
                 new ParameterizedTypeReference<Response<Order>>() {
@@ -114,7 +114,7 @@ public class CancelServiceImplTest {
         Response<Order> response = new Response<>(0, null, null);
         ResponseEntity<Response<Order>> re = new ResponseEntity<>(response, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-order-service:12031/api/v1/orderservice/order/" + "order_id",
+                "http://ts-order-service/api/v1/orderservice/order/" + "order_id",
                 HttpMethod.GET,
                 requestEntity,
                 new ParameterizedTypeReference<Response<Order>>() {
@@ -125,7 +125,7 @@ public class CancelServiceImplTest {
         Response<Order> response2 = new Response<>(1, null, order);
         ResponseEntity<Response<Order>> re2 = new ResponseEntity<>(response2, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-order-other-service:12032/api/v1/orderOtherService/orderOther/" + "order_id",
+                "http://ts-order-other-service/api/v1/orderOtherService/orderOther/" + "order_id",
                 HttpMethod.GET,
                 requestEntity,
                 new ParameterizedTypeReference<Response<Order>>() {
@@ -139,7 +139,7 @@ public class CancelServiceImplTest {
         Response response = new Response<>(1, null, null);
         ResponseEntity<Response> re = new ResponseEntity<>(response, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-inside-payment-service:18673/api/v1/inside_pay_service/inside_payment/drawback/" + "userId" + "/" + "money",
+                "http://ts-inside-payment-service/api/v1/inside_pay_service/inside_payment/drawback/" + "userId" + "/" + "money",
                 HttpMethod.GET,
                 requestEntity,
                 Response.class)).thenReturn(re);
@@ -152,7 +152,7 @@ public class CancelServiceImplTest {
         Response<User> response = new Response<>();
         ResponseEntity<Response<User>> re = new ResponseEntity<>(response, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-user-service:12342/api/v1/userservice/users/id/" + "orderId",
+                "http://ts-user-service/api/v1/userservice/users/id/" + "orderId",
                 HttpMethod.GET,
                 requestEntity,
                 new ParameterizedTypeReference<Response<User>>() {

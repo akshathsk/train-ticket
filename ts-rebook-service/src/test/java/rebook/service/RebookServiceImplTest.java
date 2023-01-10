@@ -134,7 +134,7 @@ public class RebookServiceImplTest {
         Response<Ticket> response = new Response<>();
         ResponseEntity<Response<Ticket>> reTicket = new ResponseEntity<>(response, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-seat-service:18898/api/v1/seatservice/seats",
+                "http://ts-seat-service/api/v1/seatservice/seats",
                 HttpMethod.POST,
                 requestEntityTicket,
                 new ParameterizedTypeReference<Response<Ticket>>() {

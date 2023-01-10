@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
@@ -55,7 +56,7 @@ public class InsidePaymentServiceImplTest {
         Response<Order> response = new Response<>(1, null, order);
         ResponseEntity<Response<Order>> re = new ResponseEntity<>(response, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-order-service:12031/api/v1/orderservice/order/order_id",
+                "http://ts-order-service/api/v1/orderservice/order/order_id",
                 HttpMethod.GET,
                 httpEntity,
                 new ParameterizedTypeReference<Response<Order>>() {
@@ -72,7 +73,7 @@ public class InsidePaymentServiceImplTest {
         Response response2 = new Response(1, "", null);
         ResponseEntity<Response> re2 = new ResponseEntity<>(response2, HttpStatus.OK);
         Mockito.when(restTemplate.exchange(
-                "http://ts-order-service:12031/api/v1/orderservice/order/status/" + "order_id" + "/" + 1,
+                "http://ts-order-service/api/v1/orderservice/order/status/order_id/1",
                 HttpMethod.GET,
                 httpEntity,
                 Response.class)).thenReturn(re2);
@@ -85,7 +86,7 @@ public class InsidePaymentServiceImplTest {
     public void testCreateAccount1() {
         AccountInfo info = new AccountInfo();
         List<Money> list = new ArrayList<>();
-        Mockito.when(addMoneyRepository.findByUserId(Mockito.anyString())).thenReturn(list);
+        Mockito.when(addMoneyRepository.findByUserId(Mockito.any())).thenReturn(list);
         Mockito.when(addMoneyRepository.save(Mockito.any(Money.class))).thenReturn(null);
         Response result = insidePaymentServiceImpl.createAccount(info, headers);
         Assert.assertEquals(new Response<>(1, "Create Account Success", null), result);
@@ -96,7 +97,7 @@ public class InsidePaymentServiceImplTest {
         AccountInfo info = new AccountInfo();
         List<Money> list = new ArrayList<>();
         list.add(new Money());
-        Mockito.when(addMoneyRepository.findByUserId(Mockito.anyString())).thenReturn(list);
+        Mockito.when(addMoneyRepository.findByUserId(Mockito.any())).thenReturn(list);
         Response result = insidePaymentServiceImpl.createAccount(info, headers);
         Assert.assertEquals(new Response<>(0, "Create Account Failed, Account already Exists", null), result);
     }
@@ -200,7 +201,7 @@ public class InsidePaymentServiceImplTest {
     @Test
     public void testInitPayment2() {
         Payment payment = new Payment();
-        Mockito.when(paymentRepository.findById(Mockito.anyString()).get()).thenReturn(payment);
+        Mockito.when(paymentRepository.findById(Mockito.any())).thenReturn(Optional.of(payment));
         Mockito.when(paymentRepository.save(Mockito.any(Payment.class))).thenReturn(null);
         insidePaymentServiceImpl.initPayment(payment, headers);
         Mockito.verify(paymentRepository, times(0)).save(Mockito.any(Payment.class));
